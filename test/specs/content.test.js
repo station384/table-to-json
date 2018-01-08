@@ -32,9 +32,11 @@ test('ignore nested <td> in cells', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
-                  {'First Name':'Eve 12', 'Last Name':'Jackson', 'Points':'94'},
-                  {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
+    {'First Name':'Eve 12', 'Last Name':'Jackson', 'Points':'94'},
+    {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}
+  ];
   deepEqual(table, expected);
 });
 
@@ -68,9 +70,11 @@ test('ignore nested <th> and <td> in cells', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
-                  {'First Name':'Eve number12', 'Last Name':'Jackson', 'Points':'94'},
-                  {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
+    {'First Name':'Eve number12', 'Last Name':'Jackson', 'Points':'94'},
+    {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}
+  ];
   deepEqual(table, expected);
 });
 
@@ -104,9 +108,11 @@ test('ignore nested <td> in headings', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name 12':'Smith', 'Points':'50'},
-                  {'First Name':'Eve', 'Last Name 12':'Jackson', 'Points':'94'},
-                  {'First Name':'John', 'Last Name 12':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name 12':'Smith', 'Points':'50'},
+    {'First Name':'Eve', 'Last Name 12':'Jackson', 'Points':'94'},
+    {'First Name':'John', 'Last Name 12':'Doe', 'Points':'80'}
+  ];
   deepEqual(table, expected);
 });
 
@@ -140,9 +146,11 @@ test('ignore nested <th> and <td> in headings', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name number12':'Smith', 'Points':'50'},
-                  {'First Name':'Eve', 'Last Name number12':'Jackson', 'Points':'94'},
-                  {'First Name':'John', 'Last Name number12':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name number12':'Smith', 'Points':'50'},
+    {'First Name':'Eve', 'Last Name number12':'Jackson', 'Points':'94'},
+    {'First Name':'John', 'Last Name number12':'Doe', 'Points':'80'}
+  ];
   deepEqual(table, expected);
 });
 
@@ -176,9 +184,11 @@ test('links are just values', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
-                  {'First Name':'Eve', 'Last Name':'Jackson', 'Points':'94'},
-                  {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
+    {'First Name':'Eve', 'Last Name':'Jackson', 'Points':'94'},
+    {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}
+  ];
   deepEqual(table, expected);
 });
 
@@ -222,9 +232,148 @@ test('A table with colspan', function() {
 
   expect(1);
   var table = $('#test-table').tableToJSON();
-  var expected = [{'First Name':'Jill', 'Last Name':'Jill', 'Points':'Jill'},
-                  {'First Name':'Eve', 'Last Name':'Eve', 'Points':'94'},
-                  {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}];
+  var expected = [
+    {'First Name':'Jill', 'Last Name':'Jill', 'Points':'Jill'},
+    {'First Name':'Eve', 'Last Name':'Eve', 'Points':'94'},
+    {'First Name':'John', 'Last Name':'Doe', 'Points':'80'}
+  ];
+  deepEqual(table, expected);
+});
+
+/* ignoreColumns with colspan */
+test('ignoreColumns with colspan', function() {
+  $('#qunit-fixture').html(
+      '<table id="test-table">' +
+      '<tr>' +
+      '<th>First Name</th>' +
+      '<th>Last Name</th>' +
+      '<th>Points</th>' +
+      '</tr>' +
+      '<tr>' +
+      '<td colspan="3">Jill</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td colspan="2">Eve</td>' +
+      '<td>94</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td colspan="1">John</td>' +
+      '<td>Doe</td>' +
+      '<td>80</td>' +
+      '</tr>' +
+      '</table>'
+  );
+
+
+  expect(1);
+  var table = $('#test-table').tableToJSON({ ignoreColumns : [1] });
+  var expected = [
+    {'First Name':'Jill', 'Points':'Jill'},
+    {'First Name':'Eve', 'Points':'94'},
+    {'First Name':'John', 'Points':'80'}
+  ];
+  deepEqual(table, expected);
+});
+
+/* A table with rowspan */
+test('A table with rowspan', function() {
+  $('#qunit-fixture').html(
+    '<table id="test-table">' +
+      '<tr>' +
+        '<th>First Name</th>' +
+        '<th>Last Name</th>' +
+        '<th>Points</th>' +
+      '</tr>' +
+      '<tr>' +
+        '<td rowspan="3">Jill</td>' +
+        '<td>Smith</td>' +
+        '<td>50</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td rowspan="2">Jackson</td>' +
+        '<td>94</td>' +
+      '</tr>' +
+      '<tr>' +
+        '<td>80</td>' +
+      '</tr>' +
+    '</table>'
+  );
+
+
+  expect(1);
+  var table = $('#test-table').tableToJSON();
+  var expected = [
+    {'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
+    {'First Name':'Jill', 'Last Name':'Jackson', 'Points':'94'},
+    {'First Name':'Jill', 'Last Name':'Jackson', 'Points':'80'}
+  ];
+  deepEqual(table, expected);
+});
+
+/* ignoreColumns with rowspan */
+test('ignoreColumns with rowspan', function() {
+  $('#qunit-fixture').html(
+      '<table id="test-table">' +
+      '<tr>' +
+      '<th>First Name</th>' +
+      '<th>Last Name</th>' +
+      '<th>Points</th>' +
+      '</tr>' +
+      '<tr>' +
+      '<td rowspan="3">Jill</td>' +
+      '<td>Smith</td>' +
+      '<td>50</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td rowspan="2">Jackson</td>' +
+      '<td>94</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td>80</td>' +
+      '</tr>' +
+      '</table>'
+  );
+
+
+  expect(1);
+  var table = $('#test-table').tableToJSON({ ignoreColumns : [1] });
+  var expected = [
+    {'First Name':'Jill', 'Points':'50'},
+    {'First Name':'Jill', 'Points':'94'},
+    {'First Name':'Jill', 'Points':'80'}
+  ];
+  deepEqual(table, expected);
+});
+
+/* ignoreColumns with rowspan */
+test('ignoreRows with rowspan', function() {
+  $('#qunit-fixture').html(
+      '<table id="test-table">' +
+      '<tr>' +
+      '<th>First Name</th>' +
+      '<th>Last Name</th>' +
+      '<th>Points</th>' +
+      '</tr>' +
+      '<tr>' +
+      '<td rowspan="3">Jill</td>' +
+      '<td>Smith</td>' +
+      '<td>50</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td rowspan="2">Jackson</td>' +
+      '<td>94</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td>80</td>' +
+      '</tr>' +
+      '</table>'
+  );
+
+
+  expect(1);
+  var table = $('#test-table').tableToJSON({ ignoreRows : [2] });
+  var expected = [{'First Name':'Jill', 'Last Name':'Smith', 'Points':'50'},
+    {'First Name':'Jill', 'Last Name':'Jackson', 'Points':'80'}];
   deepEqual(table, expected);
 });
 
@@ -271,18 +420,16 @@ test('ignoreColumns with rowspan & colspan in tbody', function() {
 
   expect(5);
   var $table = $('#test-table');
-  $table.find('tr:eq(0)').hide();
-  var table = $table.tableToJSON({ headings: [ 'v1','v2','v3','v4' ], ignoreColumns : [0] });
-  $table.find('tr:eq(0)').show();
+  var table = $table.tableToJSON({ ignoreColumns : [0] });
   var expected = [
-    {'v1':'1.1','v2':'1.2','v3':'1.3','v4':'1.4'},
-    {'v1':'1.5','v2':'1.6','v3':'1.7','v4':'1.4'},
-    {'v1':'2.1','v2':'2.2','v3':'2.3','v4':'2.4'},
-    {'v1':'2.5','v2':'2.5','v3':'2.6','v4':'2.7'},
-    {'v1':'3.1','v2':'3.1','v3':'3.2','v4':'3.2'},
-    {'v1':'3.1','v2':'3.1','v3':'3.4','v4':'3.5'}
+    {'value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'},
+    {'value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
   ];
-  deepEqual(table, expected);
+  deepEqual(table, expected, 'Ignore Column "line"');
 
   table = $table.tableToJSON({ ignoreColumns : [1] });
   expected = [
@@ -293,7 +440,7 @@ test('ignoreColumns with rowspan & colspan in tbody', function() {
     {'line':'3','value2':'3.1','value3':'3.2','value4':'3.2'},
     {'line':'3','value2':'3.1','value3':'3.4','value4':'3.5'}
   ];
-  deepEqual(table, expected);
+  deepEqual(table, expected, 'Ignore Column "value1"');
 
   table = $table.tableToJSON({ ignoreColumns : [2] });
   expected = [
@@ -304,7 +451,7 @@ test('ignoreColumns with rowspan & colspan in tbody', function() {
     {'line':'3','value1':'3.1','value3':'3.2','value4':'3.2'},
     {'line':'3','value1':'3.1','value3':'3.4','value4':'3.5'}
   ];
-  deepEqual(table, expected);
+  deepEqual(table, expected, 'Ignore Column "value2"');
 
   table = $table.tableToJSON({ ignoreColumns : [3] });
   expected = [
@@ -315,7 +462,7 @@ test('ignoreColumns with rowspan & colspan in tbody', function() {
     {'line':'3','value1':'3.1','value2':'3.1','value4':'3.2'},
     {'line':'3','value1':'3.1','value2':'3.1','value4':'3.5'}
   ];
-  deepEqual(table, expected);
+  deepEqual(table, expected, 'Ignore Column "value3"');
 
   table = $table.tableToJSON({ ignoreColumns : [4] });
   expected = [
@@ -326,6 +473,83 @@ test('ignoreColumns with rowspan & colspan in tbody', function() {
     {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2'},
     {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4'}
   ];
-  deepEqual(table, expected);
+  deepEqual(table, expected, 'Ignore Column "value4"');
 
+});
+
+/* A table with rowspan & colspan & ignoreRows */
+test('ignoreRows with rowspan & colspan in tbody', function() {
+  $('#qunit-fixture').html(
+    '<table id="test-table">' +
+    '<tr><th>line</th><th>value1</th><th>value2</th><th>value3</th><th>value4</th></tr>' +
+    '<tr><td rowspan="2">1</td><td>1.1</td><td>1.2</td><td>1.3</td><td rowspan="2">1.4</td></tr>' +
+    '<tr><td>1.5</td><td>1.6</td><td>1.7</td></tr>' +
+    '<tr><td rowspan="2">2</td><td>2.1</td><td>2.2</td><td>2.3</td><td>2.4</td></tr>' +
+    '<tr><td colspan="2">2.5</td><td>2.6</td><td>2.7</td></tr>' +
+    '<tr><td rowspan="2">3</td><td rowspan="2" colspan="2">3.1</td><td colspan="2">3.2</td></tr>' +
+    '<tr><td>3.4</td><td>3.5</td></tr>' +
+    '</table>'
+  );
+
+  expect(6);
+  var $table = $('#test-table');
+  var table = $table.tableToJSON({ ignoreRows : [1] });
+  var expected = [
+    {'line':'1','value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'line':'2','value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'line':'2','value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
+  ];
+  deepEqual(table, expected, 'Ignore row 1');
+
+  table = $table.tableToJSON({ ignoreRows : [2] });
+  expected = [
+    {'line':'1','value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'line':'2','value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'line':'2','value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
+  ];
+  deepEqual(table, expected, 'Ignore row 2');
+
+  table = $table.tableToJSON({ ignoreRows : [3] });
+  expected = [
+    {'line':'1','value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'line':'1','value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'line':'2','value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
+  ];
+  deepEqual(table, expected, 'Ignore row 3');
+
+  table = $table.tableToJSON({ ignoreRows : [4] });
+  expected = [
+    {'line':'1','value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'line':'1','value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'line':'2','value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
+  ];
+  deepEqual(table, expected, 'Ignore row 4');
+
+  table = $table.tableToJSON({ ignoreRows : [5] });
+  expected = [
+    {'line':'1','value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'line':'1','value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'line':'2','value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'line':'2','value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.4','value4':'3.5'}
+  ];
+  deepEqual(table, expected, 'Ignore row 5');
+
+  table = $table.tableToJSON({ ignoreRows : [6] });
+  expected = [
+    {'line':'1','value1':'1.1','value2':'1.2','value3':'1.3','value4':'1.4'},
+    {'line':'1','value1':'1.5','value2':'1.6','value3':'1.7','value4':'1.4'},
+    {'line':'2','value1':'2.1','value2':'2.2','value3':'2.3','value4':'2.4'},
+    {'line':'2','value1':'2.5','value2':'2.5','value3':'2.6','value4':'2.7'},
+    {'line':'3','value1':'3.1','value2':'3.1','value3':'3.2','value4':'3.2'}
+  ];
+  deepEqual(table, expected, 'Ignore row 6');
 });

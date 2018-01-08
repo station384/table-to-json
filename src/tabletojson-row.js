@@ -24,11 +24,99 @@
       return valuesWithHeadings;
     },
 
+    isEmpty: function(){
+      var empty = true;
+      var values = this.values();
+      for(var index = 0; empty && index < values.length; index++){
+        if(values[index] !== ''){
+          empty = false;
+        }
+      }
+      return empty;
+    },
+
+    cell: function(index){
+      if(index < this.cells.length){
+        return this.cells[index];
+      } else {
+        return null;
+      }
+    },
+
+    insert: function(index, cell){
+      this.cells.splice(index, 0, cell);
+    },
+
+    getRowSpans: function(spans){
+      var span, rows = [], cell;
+      for(var cellIndex = 0; cellIndex < this.cells.length; cellIndex++){
+        rows = [];
+        cell = this.cells[cellIndex];
+        if(cell){
+          span = cell.rowSpan();
+          while(span > 1){
+            rows.push(cell);
+            span--;
+          }
+          cell.rowSpan(1);
+        }
+        if(rows.length > 0){
+          spans[cellIndex] = rows;
+        }
+      }
+      //console.log("spans" + JSON.stringify(spans));
+      return spans;
+    },
+
+    insertRowSpans: function(spans){
+      for(var cellIndex = 0; cellIndex < spans.length; cellIndex++) {
+        if (spans[cellIndex] && spans[cellIndex].length > 0) {
+          var spannedCell = spans[cellIndex].splice(0, 1)[0];
+          this.insert(cellIndex, spannedCell);
+        }
+      }
+      return spans;
+    },
+
+    rowSpans: function(){
+      var spans = [], span, rows = [], cell;
+      for(var cellIndex = 0; cellIndex < this.cells.length; cellIndex++){
+        rows = [];
+        cell = this.cells[cellIndex];
+        span = cell.rowSpan();
+        while(span > 1){
+          rows.push(cell);
+          span--;
+        }
+        cell.rowSpan(1);
+        if(rows.length > 0){
+          spans[cellIndex] = rows;
+        }
+      }
+      //console.log("spans" + JSON.stringify(spans));
+      return spans;
+    },
+
     values: function(){
-      var cellValues = [];
+      var cellValues = [], value = null, colSpanOffset = 0;
       for(var index = 0; index < this.cells.length; index++){
-        if(!this.ignoreColumn(index)){
-          cellValues = cellValues.concat(this.cells[index].value());
+        value = this.cells[index].value();
+
+        if (this.cells[index].colSpan() === 1) {
+          // simple case, either ignore it or not
+          if(!this.ignoreColumn(colSpanOffset)){
+            cellValues = cellValues.concat(value);
+          }
+          colSpanOffset++;
+        } else {
+          // this cell has a colSpan, ensure each
+          // value match ignored columns
+          for (var valuesIndex = 0; valuesIndex < value.length; valuesIndex++) {
+            if (!this.ignoreColumn(colSpanOffset)) {
+              cellValues = cellValues.concat(value[valuesIndex]);
+            }
+            colSpanOffset++;
+          }
         }
       }
       return cellValues;
@@ -48,7 +136,7 @@
         self.cells.push( $(cell).tableToJSONCell(self.options) );
       });
 
-      //finilize init
+      // Finalize init
       $.proxy(function() {
         /**
         Fired when row was initialized by `$().tableToJSON()` method.
@@ -63,14 +151,14 @@
     }
   };
 
-  // Initilize row
+  // Initialize row
   $.fn.tableToJSONRow = function (options) {
     return new TableToJSONRow(this, options);
   };
 
   $.fn.tableToJSONRow.defaults = {
     /**
-    Array of column indexes to include, all other columns are ignored. This takes presidence over ignoreColumns when provided.
+    Array of column indexes to include, all other columns are ignored. This takes precedence over ignoreColumns when provided.
 
     @type Array
     @default null
